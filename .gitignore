@@ -1,0 +1,9 @@
+venv
+.idea
+.code
+
+*.pyc
+
+migrations
+
+.DS_Store
