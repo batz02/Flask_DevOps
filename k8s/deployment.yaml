@@ -15,9 +15,9 @@ spec:
       containers:
       - name: flask-container
         image: ghcr.io/batz02/flask_devops:latest
-        ports:
-        - containerPort: 8080
         env:
+        - name: DATABASE_HOST
+          value: "postgres-service" # <--- Questo dice allo script dove guardare
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://flask:passwordhere@postgres-service:5432/blog"
 ---
