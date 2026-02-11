@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Flask_DevOps
+  name: flask_devops
 spec:
   # 3 Repliche = Alta Disponibilità (Richiesto per il 30L)
   replicas: 3
   selector:
     matchLabels:
-      app: Flask_DevOps
+      app: flask_devops
   template:
     metadata:
       labels:
-        app: Flask_DevOps
+        app: flask_devops
     spec:
       containers:
-      - name: Flask_DevOps
+      - name: flask_devops
         # MODIFICA QUI SOTTO CON IL TUO PERCORSO ESATTO SE DIVERSO
-        image: ghcr.io/batz02/Flask_DevOps-devops:latest
+        image: ghcr.io/batz02/flask_devops-devops:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -32,12 +32,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: Flask_DevOps-service
+  name: flask_devops-service
 spec:
   # LoadBalancer su K3s userà l'IP del server AWS
   type: LoadBalancer
   selector:
-    app: Flask_DevOps
+    app: flask_devops
   ports:
   - port: 80         # Porta esterna (Sito web standard)
     targetPort: 8080 # Porta interna del container Flask
