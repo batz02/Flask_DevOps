@@ -27,9 +27,10 @@ kind: Service
 metadata:
   name: flask-devops-service
 spec:
-  type: LoadBalancer # K3s userà il ServiceLB per esporre l'app sulla porta 80 della VM
+  type: NodePort
   selector:
     app: flask-app
   ports:
-  - port: 80         # Porta pubblica
-    targetPort: 8080 # Porta del tuo Flask
+  - port: 80         # Porta del servizio interno
+    targetPort: 8080 # Porta del container Flask
+    nodePort: 30080  # PORTA FISSA ESTERNA
