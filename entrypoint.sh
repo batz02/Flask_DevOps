@@ -23,7 +23,7 @@ if [ ! -d "migrations" ]; then
 fi
 
 flask db migrate -m "Initial migration" || true
-flask db upgrade
+flask db upgrade || echo "Migration already done"
 
 echo "🟢 Starting Gunicorn..."
 exec "$@"
