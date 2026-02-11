@@ -6,25 +6,20 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: flask-devops
+      app: flask-app # Etichetta univoca
   template:
     metadata:
       labels:
-        app: flask-devops
+        app: flask-app
     spec:
       containers:
-      - name: flask-app
+      - name: flask-container
         image: ghcr.io/batz02/flask_devops:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://flask:password123@postgres-service:5432/blog"
-        resources:
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
@@ -33,7 +28,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: flask-devops
+    app: flask-app # Deve essere IDENTICO a sopra
   ports:
   - port: 80
-    targetPort: 8080 
+    targetPort: 8080
