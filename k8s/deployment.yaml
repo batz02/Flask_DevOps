@@ -19,7 +19,7 @@ spec:
         - containerPort: 8080
         env:
         - name: SQLALCHEMY_DATABASE_URI
-          value: "postgresql://flask:password123@postgres-service:5432/blog"
+          value: "postgresql://flask:passwordhere@postgres-service:5432/blog"
 ---
 apiVersion: v1
 kind: Service
