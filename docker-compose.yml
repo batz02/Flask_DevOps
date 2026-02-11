@@ -1,0 +1,31 @@
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      # Monta le cartelle statiche e posts per poterle modificare live durante il test
+      - ./posts:/app/posts
+      - ./static:/app/static
+      - ./templates:/app/templates
+      # NON montare app.py, altrimenti sovrascrivi la modifica fatta da sed nel container!
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=flask
+      - POSTGRES_PASSWORD=passwordhere
+      - POSTGRES_DB=blog
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flask -d blog"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
