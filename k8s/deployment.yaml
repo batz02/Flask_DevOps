@@ -1,27 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flask_devops
+  name: flask-devops
 spec:
-  # 3 Repliche = Alta Disponibilità (Richiesto per il 30L)
   replicas: 3
   selector:
     matchLabels:
-      app: flask_devops
+      app: flask-devops
   template:
     metadata:
       labels:
-        app: flask_devops
+        app: flask-devops
     spec:
       containers:
-      - name: flask_devops
-        # MODIFICA QUI SOTTO CON IL TUO PERCORSO ESATTO SE DIVERSO
-        image: ghcr.io/batz02/flask_devops-devops:latest
+      - name: flask-app
+        image: ghcr.io/batz02/flask_devops:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
-        # Qui diciamo all'app di connettersi al servizio "postgres-service" creato prima
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://flask:password123@postgres-service:5432/blog"
         resources:
@@ -32,12 +29,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask_devops-service
+  name: flask-devops-service
 spec:
-  # LoadBalancer su K3s userà l'IP del server AWS
   type: LoadBalancer
   selector:
-    app: flask_devops
+    app: flask-devops
   ports:
-  - port: 80         # Porta esterna (Sito web standard)
-    targetPort: 8080 # Porta interna del container Flask
+  - port: 80
+    target_port: 8080
