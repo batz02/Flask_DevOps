@@ -11,7 +11,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # JOB 1: VALIDAZIONE (The "Right Enhancement")
   check-markdown:
     runs-on: ubuntu-latest
     steps:
@@ -24,13 +23,12 @@ jobs:
       - name: Run Markdown Validity Check
         run: ./check_markdown_validity.sh
 
-  # JOB 2: BUILD & PUSH (Solo se il check passa)
   build-and-push:
-    needs: check-markdown # Dipende dal successo del job precedente
+    needs: check-markdown
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Necessario per scrivere su GHCR
+      packages: write
 
     steps:
       - name: Checkout repository

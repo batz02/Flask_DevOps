@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flask-devops
 spec:
-  replicas: 1 # Teniamo 1 per stabilità durante i test, poi puoi risalire a 3
+  replicas: 1
   selector:
     matchLabels:
       app: flask-app
@@ -30,6 +30,6 @@ spec:
   selector:
     app: flask-app
   ports:
-  - port: 80         # Porta del servizio interno
-    targetPort: 8080 # Porta del container Flask
-    nodePort: 30080  # PORTA FISSA ESTERNA
+  - port: 80        
+    targetPort: 8080
+    nodePort: 30080
