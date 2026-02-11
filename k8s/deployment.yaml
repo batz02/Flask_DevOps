@@ -21,16 +21,14 @@ spec:
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://flask:passwordhere@postgres-service:5432/blog"
 ---
----
 apiVersion: v1
 kind: Service
 metadata:
   name: flask-devops-service
 spec:
-  type: NodePort
+  type: LoadBalancer # K3s userà il ServiceLB per esporre l'app sulla porta 80 della VM
   selector:
     app: flask-app
   ports:
-  - port: 80         # Porta del servizio interno
-    targetPort: 8080 # Porta del container Flask
-    nodePort: 30080  # PORTA FISSA ESTERNA
+  - port: 80         # Porta pubblica
+    targetPort: 8080 # Porta del tuo Flask
