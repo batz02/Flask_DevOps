@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: flask-devops
 spec:
-  replicas: 3
+  replicas: 1 # Teniamo 1 per stabilità durante i test, poi puoi risalire a 3
   selector:
     matchLabels:
-      app: flask-app # Etichetta univoca
+      app: flask-app
   template:
     metadata:
       labels:
@@ -17,7 +17,7 @@ spec:
         image: ghcr.io/batz02/flask_devops:latest
         env:
         - name: DATABASE_HOST
-          value: "postgres-service" # <--- Questo dice allo script dove guardare
+          value: "postgres-service"
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://flask:passwordhere@postgres-service:5432/blog"
 ---
@@ -26,9 +26,10 @@ kind: Service
 metadata:
   name: flask-devops-service
 spec:
-  type: LoadBalancer
+  type: NodePort # Forza l'uso di una porta specifica sul nodo
   selector:
-    app: flask-app # Deve essere IDENTICO a sopra
+    app: flask-app
   ports:
   - port: 80
     targetPort: 8080
+    nodePort: 30080 # <--- LA PORTA MAGICA (Range 30000-32767)
