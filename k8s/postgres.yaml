@@ -49,10 +49,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: db # Questo crea l'indirizzo DNS "db" che il tuo script sta cercando
 spec:
   selector:
-    app: postgres
+    app: postgres # Punta ai pod del database
   ports:
     - protocol: TCP
       port: 5432
