@@ -17,9 +17,9 @@ spec:
         image: ghcr.io/batz02/flask_devops:latest
         env:
         - name: DATABASE_HOST
-          value: "postgres-service"
+          value: "db"
         - name: SQLALCHEMY_DATABASE_URI
-          value: "postgresql://flask:passwordhere@postgres-service:5432/blog"
+          value: "postgresql://flask:passwordhere@db:5432/blog"
 ---
 apiVersion: v1
 kind: Service
