@@ -1,13 +1,14 @@
 #!/bin/bash
 
 POST_DIR="posts/en"
+IMG_DIR="static/assets/blog-images" 
+
 EXIT_CODE=0
 
-
-echo -e "Starting Markdown Validity Check in directory: $POST_DIR..."
+echo "Starting Markdown Validity Check..."
 
 if [ ! -d "$POST_DIR" ]; then
-    echo -e "Error: Directory $POST_DIR not found!"
+    echo "Error: Directory $POST_DIR not found!"
     exit 1
 fi
 
@@ -19,38 +20,47 @@ validate_file() {
     local file_errors=0
 
     if ! grep -q "\-\-\-" "$file"; then
-        echo -e "[$filename] MISSING SEPARATOR: File must contain '---' to separate headers."
+        echo -e "[$filename] \033[0;31mFAIL\033[0m: Missing '---' separator."
         return 1
     fi
 
-    header=$(sed -n '1,/---/p' "$file")
+    header=$(sed -n '1,/^---$/p' "$file")
 
     for field in "${REQUIRED_FIELDS[@]}"; do
-        if ! echo "$header" | grep -q "$field"; then
-            echo -e " [$filename] MISSING FIELD: '$field' is required."
+        if ! echo "$header" | grep -q "^$field"; then
+            echo -e "[$filename] \033[0;31mFAIL\033[0m: Missing required field '$field'."
             file_errors=1
         fi
     done
 
-    # C. Validazione specifica della DATA (Richiesta esplicita del README)
-    # Formato richiesto: %B %d, %Y (es. "January 17, 2020")
-    # Il README dice: "January 17, 2020 is correct, 17 January 2020 is not"
+    date_line=$(echo "$header" | grep "^date:")
     
-    date_line=$(echo "$header" | grep "date:")
     if [[ ! -z "$date_line" ]]; then
-        # Estrae il valore dopo "date:" e rimuove spazi bianchi iniziali/finali
-        date_value=$(echo "$date_line" | cut -d':' -f2 | sed 's/^[ \t]*//;s/[ \t]*$//')
+        date_value=$(echo "$date_line" | cut -d':' -f2- | sed 's/^[ \t]*//;s/[ \t]*$//')
         
-        # Regex Bash per: Mese (parola iniziante con Maiuscola) + Spazio + 1 o 2 cifre + Virgola + Spazio + 4 cifre
-        # Esempio match: "January 17, 2020"
         if ! [[ "$date_value" =~ ^[A-Z][a-z]+\ [0-9]{1,2},\ [0-9]{4}$ ]]; then
-            echo -e "[$filename] INVALID DATE FORMAT: Found '$date_value'. Expected format '%B %d, %Y' (e.g., 'January 17, 2020')."
+            echo -e "[$filename] \033[0;31mFAIL\033[0m: Invalid date format '$date_value'. Expected '%B %d, %Y' (e.g. November 2, 2022)."
             file_errors=1
         fi
     fi
 
+    img_lines=$(echo "$header" | grep -E "^(image|author_image):")
+    
+    while read -r line; do
+        if [ ! -z "$line" ]; then
+            img_name=$(echo "$line" | cut -d':' -f2- | sed 's/^[ \t]*//;s/[ \t]*$//')
+            
+            if [ ! -z "$img_name" ]; then
+                if [ ! -f "$IMG_DIR/$img_name" ]; then
+                     echo -e "[$filename] \033[0;31mFAIL\033[0m: Image '$img_name' not found in $IMG_DIR."
+                     file_errors=1
+                fi
+            fi
+        fi
+    done <<< "$img_lines"
+
     if [ $file_errors -eq 0 ]; then
-        echo -e "[$filename] Passed."
+        echo -e "[$filename] \033[0;32mOK\033[0m"
         return 0
     else
         return 1
@@ -61,7 +71,7 @@ count=0
 found_files=false
 
 for post in "$POST_DIR"/*.md; do
-    if [ -f "$post" ]; then
+    if [ -e "$post" ]; then
         found_files=true
         validate_file "$post"
         if [ $? -ne 0 ]; then
@@ -72,15 +82,15 @@ for post in "$POST_DIR"/*.md; do
 done
 
 if [ "$found_files" = false ]; then
-    echo -e "No markdown files found in $POST_DIR to check."
+    echo "No markdown files found in $POST_DIR."
     exit 0 
 fi
 
 echo "------------------------------------------------"
 if [ $EXIT_CODE -eq 0 ]; then
-    echo -e "SUCCESS: All $count posts are valid! The pipeline can proceed."
+    echo -e "\033[0;32mSUCCESS\033[0m: All $count posts are valid!"
 else
-    echo -e "FAILURE: Some posts violate the template. Build aborted."
+    echo -e "\033[0;31mFAILURE\033[0m: Some posts violate the template."
 fi
 
 exit $EXIT_CODE

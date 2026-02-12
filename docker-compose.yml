@@ -6,10 +6,10 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_HOST=db # <--- Aggiungi questa riga
+      - DATABASE_HOST=db 
       - SQLALCHEMY_DATABASE_URI=postgresql://flask:passwordhere@db:5432/blog
 
-  db: # <--- Il nome deve essere "db"
+  db:
     image: postgres:13-alpine
     environment:
       POSTGRES_USER: flask

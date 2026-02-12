@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN chmod +x check_markdown_validity.sh
+
+RUN ./check_markdown_validity.sh
+
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
