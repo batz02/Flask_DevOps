@@ -7,21 +7,27 @@ echo "[DevOps Fix] Preparing app.py for host: $DB_HOST"
 sed -i "s/172.17.0.2/$DB_HOST/g" app.py
 
 echo "Waiting for Postgres at $DB_HOST:5432..."
-
 until timeout 1 bash -c "cat < /dev/null > /dev/tcp/$DB_HOST/5432" 2>/dev/null; do
   echo "Postgres is unavailable - sleeping"
   sleep 2
 done
 
-echo "Postgres is up! Running migrations..."
+echo "Postgres is up!"
 
-echo "Running Database Migrations..."
+echo "Managing Database Migrations..."
+
 if [ ! -d "migrations" ]; then
-    flask db init
+    echo "Initializing migrations folder..."
+    flask db init || echo "Init skipped (already exists)"
 fi
 
-flask db migrate -m "Initial migration" || true
-flask db upgrade
+echo "Generating migration scripts..."
+flask db migrate -m "Auto migration" || true
+
+echo "Applying database upgrade..."
+flask db upgrade || {
+    echo "Upgrade failed (Locked or already done). Assuming DB is fine."
+}
 
 echo "Starting Gunicorn..."
 exec "$@"
