@@ -1,9 +1,9 @@
 # Cloud & Edge Computing Project: Strange Blog DevOps
 
-**Student:** Matteo Battilori
-**Course:** Cloud and Edge Computing  
-**University:** Università degli studi di Modena e Reggio Emilia  
-**Academic Year:** 2025/2026
+* **Student:** Matteo Battilori
+* **Course:** Cloud and Edge Computing
+* **University:** Università degli studi di Modena e Reggio Emilia
+* **Academic Year:** 2025/2026
 
 ---
 
