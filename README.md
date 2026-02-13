@@ -44,6 +44,18 @@ To build the image locally (this will also trigger the markdown validity check):
 docker-compose up --build
 ```
 
+### 1.1 Access Local Application (Docker)
+Once the container is running via Docker Compose, the application is exposed on port 8080.
+To view the web interface, open your browser and navigate to:
+
+```bash
+http://localhost:8080
+``` 
+or 
+```bash
+http://127.0.0.1:8080
+```
+
 ### 2. Deploy to Kubernetes
 
 Apply the manifests to your cluster.
@@ -61,7 +73,17 @@ kubectl get pods
 kubectl get services
 ```
 
-### 4. Test Horizontal Scaling
+### 4. Access the Application
+The Kubernetes Service is configured as a NodePort exposed on port 30080.
+To view the web interface, open your browser and navigate to:
+
+```bash
+http://<AWS_instance_public_IP>:30080
+```
+
+> **Important:**: Ensure that the AWS Security Group (firewall) associated with your instance allows inbound traffic on TCP port 30080.
+
+### 5. Test Horizontal Scaling
 
 To demonstrate the **stateless architecture**, you can manually scale the application deployment to handle more traffic. Run the following command to increase the number of pods:
 
